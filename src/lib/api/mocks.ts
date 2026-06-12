@@ -183,6 +183,50 @@ export const mockAlertas: Alerta[] = [
 ]
 
 /**
+ * Mock-only: a brand-new sinistro that "arrives" after the first poll so the
+ * `NewAlertPopup` can be demonstrated. The real backend simply returns it in
+ * `/alertas/pendentes` once detected — no special handling needed.
+ */
+export const mockNovoSinistro: Alerta = {
+  id: 99,
+  timestamp: '2026-06-12T08:30:00Z',
+  status_alerta: 'pendente',
+  consulta_pier: {
+    placa_consultada: 'XYZ7H30',
+    resultado: 'achado',
+    resposta_raw: {
+      vehicle_lookup_id: 'aa11bb22cc33dd44',
+      vehicle: {
+        make: 'Volkswagen',
+        model: 'Nivus Highline 1.0 TSI',
+        fabrication_year: 2023,
+        color: 'Azul',
+        status: 'stolen',
+        claims: ['BO-2026-01044'],
+      },
+    },
+    deteccao: {
+      id: 60,
+      imagem_path: 'images/xyz7h30.jpg',
+      placa_lida: 'XYZ7H30',
+      confianca_ocr: 0.97,
+      marca_veiculo: 'Volkswagen',
+      modelo_veiculo: 'Nivus',
+      ano_veiculo: '2022-2024',
+      cor: 'Azul',
+      dano_detectado: false,
+      descricao_dano: null,
+      timestamp: '2026-06-12T08:30:00Z',
+      voo: {
+        id: 14,
+        area_monitorada: 'Estacionamento Norte',
+        timestamp_inicio: '2026-06-12T08:00:00Z',
+      },
+    },
+  },
+}
+
+/**
  * Detection history. Mixed Pier results, a few null VLM fields, and spread
  * across days so the filters and pagination are exercised end-to-end.
  */

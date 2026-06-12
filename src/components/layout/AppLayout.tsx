@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
+import { NewAlertPopup } from '../alertas/NewAlertPopup'
 
 /** App shell: fixed sidebar + scrollable routed content. */
 export function AppLayout() {
@@ -11,6 +12,7 @@ export function AppLayout() {
           <Outlet />
         </div>
       </main>
+      <NewAlertPopup />
     </div>
   )
 }
