@@ -7,7 +7,7 @@ import {
   ReceiptText,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import logoUrl from '../../assets/logo.svg'
+import logoUrl from '../../assets/Logo.svg'
 import { cn } from '../../lib/cn'
 
 interface NavItem {
