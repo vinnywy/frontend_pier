@@ -66,11 +66,11 @@ export default function DroneStream({ gatewayId, apiBaseUrl }: DroneStreamProps)
   }, [gatewayId, apiBaseUrl]);
 
   return (
-    <div style={{ position: "relative", width: "100%", background: "#0a0a0a", borderRadius: 12, overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100%", aspectRatio: "4 / 3", background: "#0a0a0a", borderRadius: 12, overflow: "hidden" }}>
       <img
         ref={imgRef}
         alt={`Stream do drone ${gatewayId}`}
-        style={{ width: "100%", display: "block" }}
+        style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
       />
       {status !== "ativo" && (
         <div style={{
