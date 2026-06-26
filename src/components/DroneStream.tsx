@@ -12,16 +12,19 @@ import { useEffect, useRef, useState } from "react";
 
 interface DroneStreamProps {
   gatewayId: string;
-  apiBaseUrl: string; // ex: https://backend-render-l4u0.onrender.com
+  apiBaseUrl?: string; // ex: https://backend-render-l4u0.onrender.com
 }
 
 type Status = "conectando" | "ativo" | "sem_sinal" | "erro";
 
 export default function DroneStream({ gatewayId, apiBaseUrl }: DroneStreamProps) {
   const imgRef = useRef<HTMLImageElement>(null);
-  const [status, setStatus] = useState<Status>("conectando");
+  const [status, setStatus] = useState<Status>(apiBaseUrl ? "conectando" : "sem_sinal");
 
   useEffect(() => {
+    // Sem URL do backend (ex.: VITE_API_BASE_URL ausente) não há stream a abrir.
+    // Mantém o container vazio (com "Sem sinal"), em vez de quebrar a página.
+    if (!apiBaseUrl) return;
     // http(s) → ws(s)
     const wsBase = apiBaseUrl.replace("https://", "wss://").replace("http://", "ws://").replace(/\/$/, "");
     const url = `${wsBase}/stream/gateway/${gatewayId}/watch`;

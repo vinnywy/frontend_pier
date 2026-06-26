@@ -14,8 +14,8 @@ import { formatTime } from '../../lib/format'
 export function ActivityCard({ voo }: { voo: AtividadeVoo }) {
   return (
     <Link
-      to={`/historico?voo=${voo.voo_id}`}
-      aria-label={`Ver histórico do voo em ${voo.area_monitorada}`}
+      to={`/estacoes/${voo.drone_id === 2 ? '7' : '7'}`}
+      aria-label={`Abrir drones de ${voo.area_monitorada}`}
       className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
       <Card

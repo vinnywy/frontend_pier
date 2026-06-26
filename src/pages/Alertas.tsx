@@ -22,7 +22,10 @@ export default function Alertas() {
   const pending = useMemo(
     () =>
       (data ?? []).filter(
-        (a) => !resolved.has(a.id) && matchesFilters(a, filters),
+        (a) =>
+          a?.consulta_pier?.deteccao &&
+          !resolved.has(a.id) &&
+          matchesFilters(a, filters),
       ),
     [data, resolved, filters],
   )
@@ -113,7 +116,10 @@ function withoutId(set: Set<number>, id: number): Set<number> {
 }
 
 function matchesFilters(alerta: Alerta, f: DetectionFilterState): boolean {
-  const { deteccao, placa_consultada, resultado } = alerta.consulta_pier
+  const consulta = alerta.consulta_pier
+  const deteccao = consulta?.deteccao
+  if (!deteccao) return false
+  const { placa_consultada, resultado } = consulta
 
   if (f.data && deteccao.timestamp.slice(0, 10) !== f.data) return false
 

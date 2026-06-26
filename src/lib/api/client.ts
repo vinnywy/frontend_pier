@@ -56,6 +56,25 @@ export async function apiPatch<T>(
   return res.json() as Promise<T>
 }
 
+export async function apiPost<T>(
+  path: string,
+  body: unknown,
+  signal?: AbortSignal,
+): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  })
+
+  if (!res.ok) {
+    throw new ApiError(`POST ${path} failed`, res.status)
+  }
+
+  return res.json() as Promise<T>
+}
+
 /** Resolves after `ms`, used to simulate network latency for mock responses. */
 export function delay<T>(value: T, ms = 350): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms))

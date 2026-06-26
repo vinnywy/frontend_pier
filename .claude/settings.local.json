@@ -1,11 +1,13 @@
-  {
+{
   "permissions": {
     "allow": [
       "Bash(npm install *)",
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({...p.dependencies,...p.devDependencies},null,1\\)\\)\")",
       "Bash(npm run *)",
       "PowerShell(npm run build 2>&1)",
-      "PowerShell(npm run lint 2>&1)"
+      "PowerShell(npm run lint 2>&1)",
+      "Bash(ls -la .env*)",
+      "Bash(grep -rl \"Monitor\" src)"
     ]
   }
 }

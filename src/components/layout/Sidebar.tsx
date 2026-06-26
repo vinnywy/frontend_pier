@@ -20,7 +20,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard', icon: LayoutGrid, end: true },
-  { to: '/monitor', label: 'Live Monitor', icon: Camera },
+  { to: '/estacoes', label: 'Atividade', icon: Camera },
   { to: '/alertas', label: 'Alertas', icon: AlertTriangle },
   { to: '/historico', label: 'Histórico', icon: ReceiptText },
 ]
