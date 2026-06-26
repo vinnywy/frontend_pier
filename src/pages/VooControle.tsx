@@ -41,6 +41,16 @@ export default function VooControle() {
   const pollRef = useRef<number | undefined>(undefined)
 
   const emExecucao = estado === 'iniciando' || estado === 'em_execucao'
+  const finalizado = estado === 'concluida' || estado === 'erro'
+
+  // O mapa anima em loop até o voo terminar. Uma vez iniciado o voo, mantemos
+  // running=true mesmo que um poll retorne um estado transitório; só liberamos
+  // quando a rota chega a 'concluida' ou 'erro'.
+  const [voando, setVoando] = useState(false)
+  useEffect(() => {
+    if (emExecucao) setVoando(true)
+    else if (finalizado) setVoando(false)
+  }, [emExecucao, finalizado])
 
   // Polling do estado da rota enquanto há uma operação em curso.
   const acompanhar = useCallback(() => {
@@ -166,7 +176,7 @@ export default function VooControle() {
               <>
                 {/* Mapa do percurso */}
                 <div className="h-28 w-28 shrink-0 rounded-full bg-[#1a1d22] p-3">
-                  <RouteMap routeId={rota} running={emExecucao} durationS={duration} />
+                  <RouteMap routeId={rota} running={voando} durationS={duration} />
                 </div>
 
                 <div className="flex gap-3">

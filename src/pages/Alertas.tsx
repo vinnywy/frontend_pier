@@ -5,6 +5,7 @@ import { DetectionFilters } from '../components/filters/DetectionFilters'
 import { EMPTY_FILTERS } from '../components/filters/detection-filters'
 import type { DetectionFilterState } from '../components/filters/detection-filters'
 import { AlertCard } from '../components/alertas/AlertCard'
+import { ErrorBoundary } from '../components/ErrorBoundary'
 import { Card } from '../components/ui/Card'
 import { useAlertasPendentes } from '../hooks/useAlertas'
 import { updateAlertaStatus } from '../lib/api/alertas'
@@ -55,22 +56,24 @@ export default function Alertas() {
         </Card>
       )}
 
-      <section className="flex flex-col gap-5">
-        {loading && !data ? (
-          Array.from({ length: 2 }).map((_, i) => <AlertSkeleton key={i} />)
-        ) : pending.length === 0 ? (
-          <EmptyState filtered={(data ?? []).length > 0} />
-        ) : (
-          pending.map((alerta) => (
-            <AlertCard
-              key={alerta.id}
-              alerta={alerta}
-              submitting={submitting.has(alerta.id)}
-              onResolve={handleResolve}
-            />
-          ))
-        )}
-      </section>
+      <ErrorBoundary>
+        <section className="flex flex-col gap-5">
+          {loading && !data ? (
+            Array.from({ length: 2 }).map((_, i) => <AlertSkeleton key={i} />)
+          ) : pending.length === 0 ? (
+            <EmptyState filtered={(data ?? []).length > 0} />
+          ) : (
+            pending.map((alerta) => (
+              <AlertCard
+                key={alerta.id}
+                alerta={alerta}
+                submitting={submitting.has(alerta.id)}
+                onResolve={handleResolve}
+              />
+            ))
+          )}
+        </section>
+      </ErrorBoundary>
     </>
   )
 }
@@ -121,18 +124,18 @@ function matchesFilters(alerta: Alerta, f: DetectionFilterState): boolean {
   if (!deteccao) return false
   const { placa_consultada, resultado } = consulta
 
-  if (f.data && deteccao.timestamp.slice(0, 10) !== f.data) return false
+  if (f.data && (deteccao.timestamp ?? '').slice(0, 10) !== f.data) return false
 
   if (
     f.placaLida &&
-    !deteccao.placa_lida.toLowerCase().includes(f.placaLida.toLowerCase())
+    !(deteccao.placa_lida ?? '').toLowerCase().includes(f.placaLida.toLowerCase())
   ) {
     return false
   }
 
   if (
     f.placaConsultada &&
-    !placa_consultada.toLowerCase().includes(f.placaConsultada.toLowerCase())
+    !(placa_consultada ?? '').toLowerCase().includes(f.placaConsultada.toLowerCase())
   ) {
     return false
   }

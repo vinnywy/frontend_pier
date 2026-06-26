@@ -18,14 +18,14 @@ interface AlertCardProps {
  */
 export function AlertCard({ alerta, submitting, onResolve }: AlertCardProps) {
   const { deteccao, resposta_raw, placa_consultada } = alerta.consulta_pier
-  const veiculo = resposta_raw.vehicle
-  const confianca = Math.round(deteccao.confianca_ocr * 100)
+  const veiculo = resposta_raw?.vehicle
+  const confianca = Math.round((deteccao.confianca_ocr ?? 0) * 100)
 
   return (
     <Card className="flex flex-col gap-6 p-4 lg:flex-row lg:items-stretch">
       <VehicleImage
-        path={deteccao.imagem_path}
-        alt={`Veículo de placa ${deteccao.placa_lida}`}
+        path={deteccao.imagem_path ?? ''}
+        alt={`Veículo de placa ${deteccao.placa_lida ?? '—'}`}
         className="h-48 w-full lg:h-auto lg:min-h-[200px] lg:w-72"
       />
 
@@ -33,7 +33,7 @@ export function AlertCard({ alerta, submitting, onResolve }: AlertCardProps) {
         <AttributeColumn
           title="Detecção"
           rows={[
-            ['Placa Lida', deteccao.placa_lida],
+            ['Placa Lida', deteccao.placa_lida ?? '—'],
             ['Marca', deteccao.marca_veiculo ?? '—'],
             ['Modelo', deteccao.modelo_veiculo ?? '—'],
             ['Ano', deteccao.ano_veiculo ?? '—'],
@@ -43,11 +43,11 @@ export function AlertCard({ alerta, submitting, onResolve }: AlertCardProps) {
         <AttributeColumn
           title="Resposta Pier"
           rows={[
-            ['Placa Consultada', placa_consultada],
-            ['Marca', veiculo.make],
-            ['Modelo', veiculo.model],
-            ['Ano', String(veiculo.fabrication_year)],
-            ['Cor', veiculo.color],
+            ['Placa Consultada', placa_consultada ?? '—'],
+            ['Marca', veiculo?.make ?? '—'],
+            ['Modelo', veiculo?.model ?? '—'],
+            ['Ano', veiculo?.fabrication_year != null ? String(veiculo.fabrication_year) : '—'],
+            ['Cor', veiculo?.color ?? '—'],
           ]}
         />
 
