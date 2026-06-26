@@ -6,7 +6,7 @@
  * Não há botão de abortar voo: o backend ainda não suporta essa ação.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { PageHeader } from '../components/layout/PageHeader'
 import DroneStream from '../components/DroneStream'
 import { RouteMap } from '../components/voo/Routemap'
@@ -24,10 +24,14 @@ import type { Telemetria } from '../lib/api/types'
 
 const API = import.meta.env.VITE_API_BASE_URL as string
 
+const ROTAS: { id: RouteId; label: string }[] = [
+  { id: 'square', label: 'Square' },
+  { id: 'road', label: 'Road' },
+]
+
 export default function VooControle() {
   const { gatewayId = '7', droneId = '7' } = useParams()
-  const [params] = useSearchParams()
-  const rota = (params.get('rota') as RouteId) ?? 'square'
+  const [rota, setRota] = useState<RouteId | null>(null)
 
   const [estado, setEstado] = useState<EstadoRota>('idle')
   const [duration, setDuration] = useState<number | undefined>()
@@ -42,6 +46,7 @@ export default function VooControle() {
   const acompanhar = useCallback(() => {
     window.clearInterval(pollRef.current)
     pollRef.current = window.setInterval(async () => {
+      if (!rota) return
       try {
         const r = await getEstadoRota(rota)
         setEstado(r.estado)
@@ -91,6 +96,7 @@ export default function VooControle() {
   }, [droneId])
 
   const handlePreparar = async () => {
+    if (!rota) return
     setErro(null)
     try {
       const r = await prepararRota(rota)
@@ -102,6 +108,7 @@ export default function VooControle() {
   }
 
   const handleIniciar = async () => {
+    if (!rota) return
     setErro(null)
     try {
       const r = await iniciarRota(rota)
@@ -133,47 +140,63 @@ export default function VooControle() {
           <TelemetriaCard telemetria={telemetria} />
 
           <div className="flex flex-1 min-h-0 flex-col items-center justify-center gap-4 overflow-hidden rounded-lg bg-surface p-6">
-            {/* Mapa do percurso */}
-            <div className="h-28 w-28 shrink-0 rounded-full bg-[#1a1d22] p-3">
-              <RouteMap routeId={rota} running={emExecucao} durationS={duration} />
-            </div>
-
-            <div className="flex gap-3">
-              {estado === 'pronta' ? (
-                <button
-                  type="button"
-                  onClick={handleIniciar}
-                  className="rounded-lg bg-emerald-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-600"
-                >
-                  Iniciar Vôo
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handlePreparar}
-                  disabled={!conectado || estado === 'preparando' || emExecucao}
-                  className={cn(
-                    'rounded-lg px-6 py-3 font-semibold transition-colors',
-                    !conectado || estado === 'preparando' || emExecucao
-                      ? 'cursor-not-allowed bg-surface-muted text-text-muted'
-                      : 'bg-accent text-white hover:bg-primary',
-                  )}
-                >
-                  {!conectado
-                    ? 'Aguardando drone…'
-                    : estado === 'preparando'
-                      ? 'Preparando…'
-                      : 'Preparar Vôo'}
-                </button>
-              )}
-            </div>
-
             {!conectado ? (
               <p className="text-center text-sm text-text-muted">
                 Aguardando conexão do drone…
               </p>
+            ) : !rota ? (
+              <>
+                <p className="text-center text-sm text-text-muted">
+                  Drone conectado. Escolha a rota do voo.
+                </p>
+                <div className="flex gap-3">
+                  {ROTAS.map(({ id, label }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setRota(id)}
+                      className="rounded-lg bg-accent-soft px-6 py-3 font-semibold text-primary transition-colors hover:bg-accent hover:text-white"
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </>
             ) : (
-              <EstadoLinha estado={estado} rota={rota} />
+              <>
+                {/* Mapa do percurso */}
+                <div className="h-28 w-28 shrink-0 rounded-full bg-[#1a1d22] p-3">
+                  <RouteMap routeId={rota} running={emExecucao} durationS={duration} />
+                </div>
+
+                <div className="flex gap-3">
+                  {estado === 'pronta' ? (
+                    <button
+                      type="button"
+                      onClick={handleIniciar}
+                      className="rounded-lg bg-emerald-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-600"
+                    >
+                      Iniciar Vôo
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handlePreparar}
+                      disabled={estado === 'preparando' || emExecucao}
+                      className={cn(
+                        'rounded-lg px-6 py-3 font-semibold transition-colors',
+                        estado === 'preparando' || emExecucao
+                          ? 'cursor-not-allowed bg-surface-muted text-text-muted'
+                          : 'bg-accent text-white hover:bg-primary',
+                      )}
+                    >
+                      {estado === 'preparando' ? 'Preparando…' : 'Preparar Vôo'}
+                    </button>
+                  )}
+                </div>
+
+                <EstadoLinha estado={estado} rota={rota} />
+              </>
             )}
           </div>
         </div>

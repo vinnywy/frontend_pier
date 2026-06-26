@@ -1,6 +1,6 @@
 /**
- * DroneCard — card de um drone dentro de uma estação. Drone ativo permite
- * escolher a rota (square/road) e seguir para a tela de voo. Drone fora de
+ * DroneCard — card de um drone dentro de uma estação. Drone ativo abre a tela
+ * de voo (a rota é escolhida lá, após confirmar o stream). Drone fora de
  * serviço fica desabilitado.
  */
 import { useNavigate } from 'react-router-dom'
@@ -9,12 +9,6 @@ import { Card } from '../ui/Card'
 import { DroneMark } from '../icons/DroneMark'
 import { cn } from '../../lib/cn'
 import type { DroneInfo } from '../../lib/api/estacoes'
-import type { RouteId } from '../../lib/api/rotas'
-
-const ROTAS: { id: RouteId; label: string }[] = [
-  { id: 'square', label: 'Square' },
-  { id: 'road', label: 'Road' },
-]
 
 export function DroneCard({
   gatewayId,
@@ -25,9 +19,9 @@ export function DroneCard({
 }) {
   const navigate = useNavigate()
 
-  const escolherRota = (routeId: RouteId) => {
+  const abrir = () => {
     if (!drone.ativo) return
-    navigate(`/estacoes/${gatewayId}/drone/${drone.id}/voo?rota=${routeId}`)
+    navigate(`/estacoes/${gatewayId}/drone/${drone.id}/voo`)
   }
 
   return (
@@ -72,22 +66,19 @@ export function DroneCard({
       )}
 
       <div className="flex shrink-0 flex-col gap-2">
-        {ROTAS.map(({ id, label }) => (
-          <button
-            key={id}
-            type="button"
-            disabled={!drone.ativo}
-            onClick={() => escolherRota(id)}
-            className={cn(
-              'rounded-lg px-5 py-2 text-sm font-semibold transition-colors',
-              drone.ativo
-                ? 'bg-accent-soft text-primary hover:bg-accent hover:text-white'
-                : 'cursor-not-allowed bg-surface-muted text-text-muted',
-            )}
-          >
-            {label}
-          </button>
-        ))}
+        <button
+          type="button"
+          disabled={!drone.ativo}
+          onClick={abrir}
+          className={cn(
+            'rounded-lg px-6 py-2 text-sm font-semibold transition-colors',
+            drone.ativo
+              ? 'bg-accent-soft text-primary hover:bg-accent hover:text-white'
+              : 'cursor-not-allowed bg-surface-muted text-text-muted',
+          )}
+        >
+          Abrir
+        </button>
       </div>
     </Card>
   )
